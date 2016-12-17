@@ -49,7 +49,7 @@ curl -XGET http://localhost:8080/one/two/three/four/five/six
 
 ##### File convention
 
-Within in the final directory of any stubbed path you need to supply some files that will tell the stub how to respond. 
+Within the final directory of any stubbed path you need to supply some files that will tell the stub how to respond. 
 
 **`RequestHeaders-{name}.json`**
 ```json
