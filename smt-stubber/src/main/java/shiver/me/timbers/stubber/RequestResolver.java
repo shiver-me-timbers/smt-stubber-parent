@@ -18,7 +18,7 @@ class RequestResolver {
         this.paths = paths;
     }
 
-    StubbedRequest resolveRequest(String path, HttpServletRequest request) throws IOException {
+    StubbedRequest resolveRequest(HttpServletRequest request, String path) throws IOException {
         if (path.isEmpty()) {
             return null;
         }
@@ -28,6 +28,6 @@ class RequestResolver {
             return stubbedRequest;
         }
 
-        return resolveRequest(paths.parentPath(path), request);
+        return resolveRequest(request, paths.parentPath(path));
     }
 }

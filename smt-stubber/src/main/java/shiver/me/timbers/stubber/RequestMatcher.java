@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 class RequestMatcher {
 
-    boolean matches(StubbedRequest stubbedRequest, HttpServletRequest request) {
+    boolean matches(HttpServletRequest request, StubbedRequest stubbedRequest) {
         throw new UnsupportedOperationException();
     }
 }

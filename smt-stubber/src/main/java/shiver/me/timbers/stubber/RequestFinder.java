@@ -19,7 +19,7 @@ class RequestFinder {
     StubbedRequest find(List<String> paths, HttpServletRequest request) {
         final List<StubbedRequest> requests = requestMapper.read(paths);
         for (StubbedRequest stubbedRequest : requests) {
-            if (requestMatcher.matches(stubbedRequest, request)) {
+            if (requestMatcher.matches(request, stubbedRequest)) {
                 return stubbedRequest;
             }
         }

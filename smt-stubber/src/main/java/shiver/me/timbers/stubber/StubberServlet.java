@@ -16,12 +16,25 @@ public class StubberServlet extends HttpServlet {
     private final ResponseWriter responseWriter;
 
     public StubberServlet() {
+        this(new Resources(), new Paths());
+    }
+
+    private StubberServlet(Resources resources, Paths paths) {
         this(
             new PathResolver(),
             new RequestResolver(
-                new Resources(),
-                new RequestFinder(new RequestMapper(), new RequestMatcher()),
-                new Paths()
+                resources,
+                new RequestFinder(
+                    new RequestMapper(
+                        new Lists(),
+                        new IsRequestFile(paths),
+                        new AgainstRequestName(),
+                        new ToRequestFilePairs(),
+                        new ToStubbedRequest()
+                    ),
+                    new RequestMatcher()
+                ),
+                paths
             ),
             new ResponseWriter()
         );
@@ -36,6 +49,6 @@ public class StubberServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        responseWriter.write(requestResolver.resolveRequest(pathResolver.resolvePath(request), request), response);
+        responseWriter.write(response, requestResolver.resolveRequest(request, pathResolver.resolvePath(request)));
     }
 }

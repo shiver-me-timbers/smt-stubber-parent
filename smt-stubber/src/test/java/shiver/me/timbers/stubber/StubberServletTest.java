@@ -5,7 +5,6 @@ import org.junit.Test;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 import static org.mockito.BDDMockito.given;
@@ -29,13 +28,13 @@ public class StubberServletTest {
 
         // Given
         given(pathResolver.resolvePath(request)).willReturn(path);
-        given(requestResolver.resolveRequest(path, request)).willReturn(stubbedRequest);
+        given(requestResolver.resolveRequest(request, path)).willReturn(stubbedRequest);
 
         // When
         new StubberServlet(pathResolver, requestResolver, responseWriter).service(request, response);
 
         // Then
-        verify(responseWriter).write(stubbedRequest, response);
+        verify(responseWriter).write(response, stubbedRequest);
     }
 
 }

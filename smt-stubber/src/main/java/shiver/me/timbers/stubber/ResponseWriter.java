@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 class ResponseWriter {
 
-    void write(StubbedRequest stubbedRequest, HttpServletResponse response) {
+    void write(HttpServletResponse response, StubbedRequest stubbedRequest) {
         throw new UnsupportedOperationException();
     }
 }

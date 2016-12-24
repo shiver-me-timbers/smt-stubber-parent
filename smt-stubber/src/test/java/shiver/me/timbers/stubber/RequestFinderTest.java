@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static shiver.me.timbers.data.random.RandomThings.someThing;
@@ -48,7 +47,7 @@ public class RequestFinderTest {
 
         // Given
         given(requestMapper.read(paths)).willReturn(asList(stubbedRequest1, stubbedRequest2, stubbedRequest3));
-        given(requestMatcher.matches(expected, request)).willReturn(true);
+        given(requestMatcher.matches(request, expected)).willReturn(true);
 
         // When
         final StubbedRequest actual = finder.find(paths, request);
@@ -67,7 +66,7 @@ public class RequestFinderTest {
         // Given
         given(requestMapper.read(paths))
             .willReturn(asList(mock(StubbedRequest.class), mock(StubbedRequest.class), mock(StubbedRequest.class)));
-        given(requestMatcher.matches(any(StubbedRequest.class), eq(request))).willReturn(false);
+        given(requestMatcher.matches(eq(request), any(StubbedRequest.class))).willReturn(false);
 
         // When
         final StubbedRequest actual = finder.find(paths, request);

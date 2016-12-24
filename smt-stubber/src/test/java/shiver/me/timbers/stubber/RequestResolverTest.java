@@ -45,7 +45,7 @@ public class RequestResolverTest {
         given(requestFinder.find(paths, request)).willReturn(expected);
 
         // When
-        final StubbedRequest actual = resolver.resolveRequest(path, request);
+        final StubbedRequest actual = resolver.resolveRequest(request, path);
 
         // Then
         assertThat(actual, is(expected));
@@ -72,7 +72,7 @@ public class RequestResolverTest {
         given(requestFinder.find(parentFilePaths, request)).willReturn(expected);
 
         // When
-        final StubbedRequest actual = resolver.resolveRequest(path, request);
+        final StubbedRequest actual = resolver.resolveRequest(request, path);
 
         // Then
         assertThat(actual, is(expected));
@@ -93,7 +93,7 @@ public class RequestResolverTest {
         given(paths.parentPath(path)).willReturn("");
 
         // When
-        final StubbedRequest actual = resolver.resolveRequest(path, request);
+        final StubbedRequest actual = resolver.resolveRequest(request, path);
 
         // Then
         assertThat(actual, nullValue());
