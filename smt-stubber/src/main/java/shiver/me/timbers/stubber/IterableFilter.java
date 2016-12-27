@@ -76,4 +76,8 @@ class IterableFilter<T> implements Iterable<T> {
     <O> IterableMapper<T, O> map(Mapper<T, O> mapper) {
         return new IterableMapper<>(this, mapper);
     }
+
+    IterableFirstFinder<T> findFirst() {
+        return new IterableFirstFinder<>(this);
+    }
 }

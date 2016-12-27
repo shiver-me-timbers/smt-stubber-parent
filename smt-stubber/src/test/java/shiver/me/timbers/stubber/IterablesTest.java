@@ -8,13 +8,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static shiver.me.timbers.matchers.Matchers.hasField;
 
-public class ListsTest {
+public class IterablesTest {
 
-    private Lists lists;
+    private Iterables iterables;
 
     @Before
     public void setUp() {
-        lists = new Lists();
+        iterables = new Iterables();
     }
 
     @Test
@@ -25,7 +25,7 @@ public class ListsTest {
         final Condition condition = mock(Condition.class);
 
         // When
-        final IterableFilter actual = lists.filter(iterable, condition);
+        final IterableFilter actual = iterables.filter(iterable, condition);
 
         // Then
         assertThat(actual, allOf(hasField("iterable", iterable), hasField("condition", condition)));
@@ -39,7 +39,7 @@ public class ListsTest {
         final Mapper mapper = mock(Mapper.class);
 
         // When
-        final IterableMapper actual = lists.map(iterable, mapper);
+        final IterableMapper actual = iterables.map(iterable, mapper);
 
         // Then
         assertThat(actual, allOf(hasField("iterable", iterable), hasField("mapper", mapper)));

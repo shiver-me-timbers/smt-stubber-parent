@@ -1,20 +1,20 @@
 package shiver.me.timbers.stubber;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static shiver.me.timbers.data.random.RandomThings.someThing;
+import static shiver.me.timbers.matchers.Matchers.hasField;
 
 /**
  * @author Karl Bennett
@@ -22,32 +22,36 @@ import static shiver.me.timbers.data.random.RandomThings.someThing;
 public class RequestFinderTest {
 
     private RequestMapper requestMapper;
-    private RequestMatcher requestMatcher;
+    private Iterables iterables;
     private RequestFinder finder;
 
     @Before
     public void setUp() {
         requestMapper = mock(RequestMapper.class);
-        requestMatcher = mock(RequestMatcher.class);
-        finder = new RequestFinder(requestMapper, requestMatcher);
+        iterables = mock(Iterables.class);
+        finder = new RequestFinder(requestMapper, iterables);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void Can_find_a_matching_request() {
 
-        @SuppressWarnings("unchecked")
         final List<String> paths = mock(List.class);
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
-        final StubbedRequest stubbedRequest1 = mock(StubbedRequest.class);
-        final StubbedRequest stubbedRequest2 = mock(StubbedRequest.class);
-        final StubbedRequest stubbedRequest3 = mock(StubbedRequest.class);
+        final List<StubbedRequest> stubbedRequests = mock(List.class);
+        final IterableFilter<StubbedRequest> filter = mock(IterableFilter.class);
+        final IterableFirstFinder<StubbedRequest> firstFinder = mock(IterableFirstFinder.class);
 
-        final StubbedRequest expected = someThing(stubbedRequest1, stubbedRequest2, stubbedRequest3);
+        final StubbedRequest expected = mock(StubbedRequest.class);
 
         // Given
-        given(requestMapper.read(paths)).willReturn(asList(stubbedRequest1, stubbedRequest2, stubbedRequest3));
-        given(requestMatcher.matches(request, expected)).willReturn(true);
+        given(requestMapper.read(paths)).willReturn(stubbedRequests);
+        given(iterables.filter(eq(stubbedRequests), argThat(allOf(
+            Matchers.<MatchesRequest>instanceOf(MatchesRequest.class), hasField("request", request)
+        )))).willReturn(filter);
+        given(filter.findFirst()).willReturn(firstFinder);
+        given(firstFinder.getOrElse(null)).willReturn(expected);
 
         // When
         final StubbedRequest actual = finder.find(paths, request);
@@ -55,24 +59,4 @@ public class RequestFinderTest {
         // Then
         assertThat(actual, is(expected));
     }
-
-    @Test
-    public void Can_fail_to_find_a_matching_request() {
-
-        @SuppressWarnings("unchecked")
-        final List<String> paths = mock(List.class);
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-
-        // Given
-        given(requestMapper.read(paths))
-            .willReturn(asList(mock(StubbedRequest.class), mock(StubbedRequest.class), mock(StubbedRequest.class)));
-        given(requestMatcher.matches(eq(request), any(StubbedRequest.class))).willReturn(false);
-
-        // When
-        final StubbedRequest actual = finder.find(paths, request);
-
-        // Then
-        assertThat(actual, nullValue());
-    }
-
 }

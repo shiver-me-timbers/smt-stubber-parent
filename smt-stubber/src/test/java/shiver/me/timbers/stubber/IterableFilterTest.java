@@ -125,4 +125,14 @@ public class IterableFilterTest {
         // When
         filter.iterator().remove();
     }
+
+    @Test
+    public void Can_findTheFirst_thing_that_was_successfully_filtered() {
+
+        // When
+        final IterableFirstFinder<Integer> actual = filter.findFirst();
+
+        // Then
+        assertThat(actual, hasField("iterable", filter));
+    }
 }

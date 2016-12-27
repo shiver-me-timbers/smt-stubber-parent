@@ -13,7 +13,7 @@ class IterableReducer<I, O> {
         this.reducer = reducer;
     }
 
-    O getElse(O other) {
+    O getOrElse(O other) {
         if (!iterable.iterator().hasNext()) {
             return other;
         }

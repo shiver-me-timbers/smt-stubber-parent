@@ -16,27 +16,27 @@ public class StubberServlet extends HttpServlet {
     private final ResponseWriter responseWriter;
 
     public StubberServlet() {
-        this(new Resources(), new Paths());
+        this(new Resources(), new Paths(), new Iterables());
     }
 
-    private StubberServlet(Resources resources, Paths paths) {
+    private StubberServlet(Resources resources, Paths paths, Iterables iterables) {
         this(
             new PathResolver(),
             new RequestResolver(
                 resources,
                 new RequestFinder(
                     new RequestMapper(
-                        new Lists(),
+                        iterables,
                         new IsRequestFile(paths),
                         new AgainstRequestName(),
                         new ToRequestFilePairs(),
                         new ToStubbedRequest()
                     ),
-                    new RequestMatcher()
+                    iterables
                 ),
                 paths
             ),
-            new ResponseWriter()
+            new ResponseWriter(new ResponseResolver(), iterables, new IO())
         );
     }
 

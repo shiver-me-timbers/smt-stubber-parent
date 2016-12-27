@@ -46,7 +46,7 @@ public class IterableReducerTest {
         given(reducer.reduce(result2, input3)).willReturn(expected);
 
         // When
-        final String actual = iterableReducer.getElse(someString());
+        final String actual = iterableReducer.getOrElse(someString());
 
         // Then
         assertThat(actual, is(expected));
@@ -61,7 +61,7 @@ public class IterableReducerTest {
         given(iterable.iterator()).willReturn(Collections.<Integer>emptyList().iterator());
 
         // When
-        final String actual = iterableReducer.getElse(expected);
+        final String actual = iterableReducer.getOrElse(expected);
 
         // Then
         verifyZeroInteractions(reducer);

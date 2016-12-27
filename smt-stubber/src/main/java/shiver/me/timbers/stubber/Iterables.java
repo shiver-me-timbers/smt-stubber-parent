@@ -3,7 +3,7 @@ package shiver.me.timbers.stubber;
 /**
  * @author Karl Bennett
  */
-class Lists {
+class Iterables {
 
     <T> IterableFilter<T> filter(Iterable<T> iterable, Condition<T> condition) {
         return new IterableFilter<>(iterable, condition);
@@ -11,5 +11,9 @@ class Lists {
 
     <I, O> IterableMapper<I, O> map(Iterable<I> iterable, Mapper<I, O> mapper) {
         return new IterableMapper<>(iterable, mapper);
+    }
+
+    <T> void forEach(Iterable<T> iterable, Apply<T> apply) {
+        throw new UnsupportedOperationException();
     }
 }

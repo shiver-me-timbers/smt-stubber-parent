@@ -12,20 +12,20 @@ import static java.util.Map.Entry;
  */
 class RequestMapper {
 
-    private final Lists lists;
+    private final Iterables iterables;
     private final IsRequestFile isRequestFile;
     private final AgainstRequestName againstRequestName;
     private final ToRequestFilePairs toRequestFilePairs;
     private final ToStubbedRequest toStubbedRequest;
 
     RequestMapper(
-        Lists lists,
+        Iterables iterables,
         IsRequestFile isRequestFile,
         AgainstRequestName againstRequestName,
         ToRequestFilePairs toRequestFilePairs,
         ToStubbedRequest toStubbedRequest
     ) {
-        this.lists = lists;
+        this.iterables = iterables;
         this.isRequestFile = isRequestFile;
         this.againstRequestName = againstRequestName;
         this.toRequestFilePairs = toRequestFilePairs;
@@ -33,17 +33,9 @@ class RequestMapper {
     }
 
     List<StubbedRequest> read(List<String> paths) {
-        final Map<String, Entry<String, String>> requestFileMap = lists.filter(paths, isRequestFile)
+        final Map<String, Entry<String, String>> requestFileMap = iterables.filter(paths, isRequestFile)
             .map(againstRequestName).reduce(toRequestFilePairs)
-            .getElse(Collections.<String, Entry<String, String>>emptyMap());
-
-        return lists.map(requestFileMap.entrySet(), toStubbedRequest).toList(new ArrayList<StubbedRequest>());
-//        final List<StubbedRequest> requests = new ArrayList<>();
-//        for (String name : requestFileMap.keySet()) {
-//            final Entry<String, String> entry = requestFileMap.get(name);
-//            requests.add(new StubbedRequest(
-//                name, requestHeaderMapper.read(entry.getKey()), requestBodyMapper.read(entry.getValue())
-//            ));
-//        }
+            .getOrElse(Collections.<String, Entry<String, String>>emptyMap());
+        return iterables.map(requestFileMap.entrySet(), toStubbedRequest).toList(new ArrayList<StubbedRequest>());
     }
 }

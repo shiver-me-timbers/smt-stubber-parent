@@ -9,20 +9,15 @@ import java.util.List;
 class RequestFinder {
 
     private final RequestMapper requestMapper;
-    private final RequestMatcher requestMatcher;
+    private final Iterables iterables;
 
-    RequestFinder(RequestMapper requestMapper, RequestMatcher requestMatcher) {
+    RequestFinder(RequestMapper requestMapper, Iterables iterables) {
         this.requestMapper = requestMapper;
-        this.requestMatcher = requestMatcher;
+        this.iterables = iterables;
     }
 
     StubbedRequest find(List<String> paths, HttpServletRequest request) {
-        final List<StubbedRequest> requests = requestMapper.read(paths);
-        for (StubbedRequest stubbedRequest : requests) {
-            if (requestMatcher.matches(request, stubbedRequest)) {
-                return stubbedRequest;
-            }
-        }
-        return null;
+        return iterables.filter(requestMapper.read(paths), new MatchesRequest(request)).findFirst()
+            .getOrElse(null);
     }
 }

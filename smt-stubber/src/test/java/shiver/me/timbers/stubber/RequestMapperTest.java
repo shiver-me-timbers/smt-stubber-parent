@@ -21,7 +21,7 @@ public class RequestMapperTest {
     @SuppressWarnings("unchecked")
     public void Can_read_all_request_objects() {
 
-        final Lists lists = mock(Lists.class);
+        final Iterables iterables = mock(Iterables.class);
         final IsRequestFile isRequestFile = mock(IsRequestFile.class);
         final AgainstRequestName againstRequestName = mock(AgainstRequestName.class);
         final ToRequestFilePairs toRequestFilePairs = mock(ToRequestFilePairs.class);
@@ -40,17 +40,17 @@ public class RequestMapperTest {
         final List<StubbedRequest> expected = mock(List.class);
 
         // Given
-        given(lists.filter(paths, isRequestFile)).willReturn(filter);
+        given(iterables.filter(paths, isRequestFile)).willReturn(filter);
         given(filter.map(againstRequestName)).willReturn(mapper);
         given(mapper.reduce(toRequestFilePairs)).willReturn(iterableReducer);
-        given(iterableReducer.getElse(Collections.<String, Entry<String, String>>emptyMap())).willReturn(requestFileMap);
+        given(iterableReducer.getOrElse(Collections.<String, Entry<String, String>>emptyMap())).willReturn(requestFileMap);
         given(requestFileMap.entrySet()).willReturn(requestFileEntries);
-        given(lists.map(requestFileEntries, toStubbedRequest)).willReturn(stubbedRequestMapper);
+        given(iterables.map(requestFileEntries, toStubbedRequest)).willReturn(stubbedRequestMapper);
         given(stubbedRequestMapper.toList(isA(ArrayList.class))).willReturn(expected);
 
         // When
         final List<StubbedRequest> actual = new RequestMapper(
-            lists,
+            iterables,
             isRequestFile,
             againstRequestName,
             toRequestFilePairs,
