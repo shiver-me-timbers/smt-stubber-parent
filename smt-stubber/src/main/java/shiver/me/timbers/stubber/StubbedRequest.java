@@ -6,12 +6,10 @@ package shiver.me.timbers.stubber;
 class StubbedRequest {
 
     private final String name;
-    private final StubbedHeaders headers;
-    private final Object body;
+    private final String path;
 
-    StubbedRequest(String name, StubbedHeaders headers, Object body) {
+    StubbedRequest(String name, String path) {
         this.name = name;
-        this.headers = headers;
-        this.body = body;
+        this.path = path;
     }
 }

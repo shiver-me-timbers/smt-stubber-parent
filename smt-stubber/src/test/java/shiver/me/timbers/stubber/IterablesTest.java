@@ -44,4 +44,18 @@ public class IterablesTest {
         // Then
         assertThat(actual, allOf(hasField("iterable", iterable), hasField("mapper", mapper)));
     }
+
+    @Test
+    public void Can_create_a_for_each() {
+
+        // Given
+        final Iterable iterable = mock(Iterable.class);
+        final Apply apply = mock(Apply.class);
+
+        // When
+        final IterableForEach actual = iterables.forEach(iterable, apply);
+
+        // Then
+        assertThat(actual, allOf(hasField("iterable", iterable), hasField("apply", apply)));
+    }
 }

@@ -40,11 +40,22 @@ GET
         └── three
 ```
 
-If no deeper directories are added then this directory structure will also match any deeper paths e.g.
+If you wish to provide some default stubbing for any other paths under `/one/two/` that don't have an explicit directory
+then you can place those responses under a directory named `_`.
+```bash
+mkdir -p GET/one/two/_
+tree GET
+GET
+└── one
+    └── two
+        └── _
 ```
-curl -XGET http://localhost:8080/one/two/three/four
-curl -XGET http://localhost:8080/one/two/three/four/five
-curl -XGET http://localhost:8080/one/two/three/four/five/six
+
+This stubbing would then match the following requests as long as no explicit directories are setup for them.
+```bash
+curl -XGET http://localhost:8080/one/two/four
+curl -XGET http://localhost:8080/one/two/five
+curl -XGET http://localhost:8080/one/two/six
 ```
 
 ##### File convention

@@ -10,6 +10,10 @@ import static java.lang.String.format;
  */
 class Paths {
 
+    boolean exists(String path) {
+        return new File(path).exists();
+    }
+
     String parentPath(String path) {
         final Path parent = java.nio.file.Paths.get(path).getParent();
         if (parent == null) {

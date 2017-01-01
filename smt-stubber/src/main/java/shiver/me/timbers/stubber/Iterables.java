@@ -13,7 +13,7 @@ class Iterables {
         return new IterableMapper<>(iterable, mapper);
     }
 
-    <T> void forEach(Iterable<T> iterable, Apply<T> apply) {
-        throw new UnsupportedOperationException();
+    <T> IterableForEach forEach(Iterable<T> iterable, Apply<T> apply) {
+        return new IterableForEach<>(iterable, apply);
     }
 }

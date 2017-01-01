@@ -26,6 +26,39 @@ public class PathsTest {
     }
 
     @Test
+    public void Can_check_if_a_path_exists() {
+
+        // Given
+        final String path = Thread.currentThread().getContextClassLoader().getResource("a/test/directory").getPath();
+
+        // When
+        final boolean actual = paths.exists(path);
+
+        // Then
+        assertThat(actual, is(true));
+    }
+
+    @Test
+    public void Can_check_if_a_path_does_not_exist() {
+
+        // Given
+        final String path = format(
+            "%s%s%s%s%s",
+            someAlphanumericString(3),
+            File.separator,
+            someAlphanumericString(5),
+            File.separator,
+            someAlphanumericString(8)
+        );
+
+        // When
+        final boolean actual = paths.exists(path);
+
+        // Then
+        assertThat(actual, is(false));
+    }
+
+    @Test
     public void Can_get_the_parent_path() {
 
         // Given

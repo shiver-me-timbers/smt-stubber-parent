@@ -2,6 +2,7 @@ package shiver.me.timbers.stubber;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Karl Bennett
@@ -20,7 +21,22 @@ class ResponseWriter {
 
     void write(HttpServletResponse response, StubbedRequest stubbedRequest) throws IOException {
         final StubbedResponse stubbedResponse = responseResolver.resolveResponse(stubbedRequest);
-        iterables.forEach(stubbedResponse.getHeaders().entrySet(), new ApplyHeaders(response));
-        io.write(stubbedResponse.getInputStream(), response.getOutputStream());
+        writeStatus(stubbedResponse, response);
+        writeHeaders(stubbedResponse, response);
+        writeBody(stubbedResponse, response);
+    }
+
+    private void writeStatus(StubbedResponse stubbedResponse, HttpServletResponse response) {
+        response.setStatus(stubbedResponse.getStatus());
+    }
+
+    private void writeHeaders(StubbedResponse stubbedResponse, HttpServletResponse response) {
+        iterables.forEach(stubbedResponse.getHeaders().entrySet(), new ApplyHeaders(response)).run();
+    }
+
+    private void writeBody(StubbedResponse stubbedResponse, HttpServletResponse response) throws IOException {
+        try (final InputStream responseBody = stubbedResponse.getInputStream()) {
+            io.write(responseBody, response.getOutputStream());
+        }
     }
 }

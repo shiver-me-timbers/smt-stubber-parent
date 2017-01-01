@@ -11,7 +11,6 @@ import java.io.IOException;
  */
 public class StubberServlet extends HttpServlet {
 
-    private final PathResolver pathResolver;
     private final RequestResolver requestResolver;
     private final ResponseWriter responseWriter;
 
@@ -21,27 +20,22 @@ public class StubberServlet extends HttpServlet {
 
     private StubberServlet(Resources resources, Paths paths, Iterables iterables) {
         this(
-            new PathResolver(),
             new RequestResolver(
+                new PathResolver(paths),
                 resources,
                 new RequestFinder(
                     new RequestMapper(
                         iterables,
-                        new IsRequestFile(paths),
-                        new AgainstRequestName(),
-                        new ToRequestFilePairs(),
-                        new ToStubbedRequest()
+                        paths
                     ),
                     iterables
-                ),
-                paths
+                )
             ),
-            new ResponseWriter(new ResponseResolver(), iterables, new IO())
+            new ResponseWriter(new ResponseResolver(new ResponseFinder()), iterables, new IO())
         );
     }
 
-    StubberServlet(PathResolver pathResolver, RequestResolver requestResolver, ResponseWriter responseWriter) {
-        this.pathResolver = pathResolver;
+    StubberServlet(RequestResolver requestResolver, ResponseWriter responseWriter) {
         this.requestResolver = requestResolver;
         this.responseWriter = responseWriter;
     }
@@ -49,6 +43,6 @@ public class StubberServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        responseWriter.write(response, requestResolver.resolveRequest(request, pathResolver.resolvePath(request)));
+        responseWriter.write(response, requestResolver.resolveRequest(request));
     }
 }

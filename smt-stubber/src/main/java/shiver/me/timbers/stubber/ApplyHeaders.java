@@ -15,4 +15,9 @@ class ApplyHeaders implements Apply<Entry<String, List<String>>> {
     ApplyHeaders(HttpServletResponse response) {
         this.response = response;
     }
+
+    @Override
+    public void to(Entry<String, List<String>> value) {
+        throw new UnsupportedOperationException();
+    }
 }

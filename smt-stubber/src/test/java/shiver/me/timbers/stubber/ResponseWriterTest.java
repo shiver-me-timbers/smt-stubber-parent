@@ -19,6 +19,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static shiver.me.timbers.data.random.RandomIntegers.someInteger;
 import static shiver.me.timbers.matchers.Matchers.hasField;
 
 public class ResponseWriterTest {
@@ -34,15 +35,25 @@ public class ResponseWriterTest {
         final StubbedRequest request = mock(StubbedRequest.class);
 
         final StubbedResponse stubbedResponse = mock(StubbedResponse.class);
+        final int status = someInteger();
         final Map<String, List<String>> headers = mock(Map.class);
         final Set<Entry<String, List<String>>> headersEntrySet = mock(Set.class);
+        final IterableForEach iterableForEach = mock(IterableForEach.class);
         final InputStream inputStream = mock(InputStream.class);
         final ServletOutputStream outputStream = mock(ServletOutputStream.class);
 
         // Given
         given(responseResolver.resolveResponse(request)).willReturn(stubbedResponse);
+        given(stubbedResponse.getStatus()).willReturn(status);
         given(stubbedResponse.getHeaders()).willReturn(headers);
         given(headers.entrySet()).willReturn(headersEntrySet);
+        given(iterables.forEach(
+            eq(headersEntrySet),
+            argThat(allOf(
+                Matchers.<ApplyHeaders>instanceOf(ApplyHeaders.class),
+                hasField("response", response)
+            ))
+        )).willReturn(iterableForEach);
         given(stubbedResponse.getInputStream()).willReturn(inputStream);
         given(response.getOutputStream()).willReturn(outputStream);
 
@@ -50,11 +61,10 @@ public class ResponseWriterTest {
         new ResponseWriter(responseResolver, iterables, io).write(response, request);
 
         // Then
-        final InOrder order = inOrder(iterables, io);
-        order.verify(iterables).forEach(eq(headersEntrySet), argThat(allOf(
-            Matchers.<ApplyHeaders>instanceOf(ApplyHeaders.class),
-            hasField("response", response)
-        )));
+        final InOrder order = inOrder(response, iterableForEach, io, inputStream);
+        order.verify(response).setStatus(status);
+        order.verify(iterableForEach).run();
         order.verify(io).write(inputStream, outputStream);
+        order.verify(inputStream).close();
     }
 }

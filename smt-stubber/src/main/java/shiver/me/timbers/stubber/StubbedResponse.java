@@ -10,11 +10,25 @@ import java.util.Map;
  */
 class StubbedResponse {
 
+    private final int status;
+    private final Map<String, List<String>> headers;
+    private final InputStream inputStream;
+
+    StubbedResponse(int status, Map<String, List<String>> headers, InputStream inputStream) {
+        this.status = status;
+        this.headers = headers;
+        this.inputStream = inputStream;
+    }
+
+    int getStatus() {
+        return status;
+    }
+
     Map<String, List<String>> getHeaders() {
-        throw new UnsupportedOperationException();
+        return headers;
     }
 
     InputStream getInputStream() throws IOException {
-        throw new UnsupportedOperationException();
+        return inputStream;
     }
 }

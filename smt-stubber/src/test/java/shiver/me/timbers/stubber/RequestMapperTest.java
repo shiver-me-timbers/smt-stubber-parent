@@ -1,5 +1,6 @@
 package shiver.me.timbers.stubber;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -9,11 +10,16 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Map.Entry;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static shiver.me.timbers.data.random.RandomStrings.someString;
+import static shiver.me.timbers.matchers.Matchers.hasField;
 
 public class RequestMapperTest {
 
@@ -22,11 +28,9 @@ public class RequestMapperTest {
     public void Can_read_all_request_objects() {
 
         final Iterables iterables = mock(Iterables.class);
-        final IsRequestFile isRequestFile = mock(IsRequestFile.class);
-        final AgainstRequestName againstRequestName = mock(AgainstRequestName.class);
-        final ToRequestFilePairs toRequestFilePairs = mock(ToRequestFilePairs.class);
-        final ToStubbedRequest toStubbedRequest = mock(ToStubbedRequest.class);
-        final List<String> paths = mock(List.class);
+        final Paths paths = mock(Paths.class);
+        final String path = someString();
+        final List<String> filePaths = mock(List.class);
 
         final IterableFilter<String> filter = mock(IterableFilter.class);
         final IterableMapper<String, Entry<String, String>> mapper = mock(IterableMapper.class);
@@ -40,22 +44,23 @@ public class RequestMapperTest {
         final List<StubbedRequest> expected = mock(List.class);
 
         // Given
-        given(iterables.filter(paths, isRequestFile)).willReturn(filter);
-        given(filter.map(againstRequestName)).willReturn(mapper);
-        given(mapper.reduce(toRequestFilePairs)).willReturn(iterableReducer);
-        given(iterableReducer.getOrElse(Collections.<String, Entry<String, String>>emptyMap())).willReturn(requestFileMap);
+        given(iterables.filter(
+            eq(filePaths),
+            argThat(allOf(Matchers.<Condition>instanceOf(IsRequestFile.class), hasField("paths", paths)))
+        )).willReturn(filter);
+        given(filter.map(isA(AgainstRequestName.class))).willReturn(mapper);
+        given(mapper.reduce(isA(ToRequestFilePairs.class))).willReturn(iterableReducer);
+        given(iterableReducer.getOrElse(Collections.<String, Entry<String, String>>emptyMap()))
+            .willReturn(requestFileMap);
         given(requestFileMap.entrySet()).willReturn(requestFileEntries);
-        given(iterables.map(requestFileEntries, toStubbedRequest)).willReturn(stubbedRequestMapper);
+        given(iterables.map(
+            eq(requestFileEntries),
+            argThat(allOf(Matchers.<Mapper>instanceOf(ToStubbedRequest.class), hasField("path", path)))
+        )).willReturn(stubbedRequestMapper);
         given(stubbedRequestMapper.toList(isA(ArrayList.class))).willReturn(expected);
 
         // When
-        final List<StubbedRequest> actual = new RequestMapper(
-            iterables,
-            isRequestFile,
-            againstRequestName,
-            toRequestFilePairs,
-            toStubbedRequest
-        ).read(paths);
+        final List<StubbedRequest> actual = new RequestMapper(iterables, paths).read(path, filePaths);
 
         // Then
         assertThat(actual, is(expected));

@@ -8,26 +8,27 @@ import java.io.IOException;
  */
 class RequestResolver {
 
+    private final PathResolver pathResolver;
     private final Resources resources;
     private final RequestFinder requestFinder;
-    private final Paths paths;
 
-    RequestResolver(Resources resources, RequestFinder requestFinder, Paths paths) {
+    RequestResolver(PathResolver pathResolver, Resources resources, RequestFinder requestFinder) {
+        this.pathResolver = pathResolver;
         this.resources = resources;
         this.requestFinder = requestFinder;
-        this.paths = paths;
     }
 
-    StubbedRequest resolveRequest(HttpServletRequest request, String path) throws IOException {
-        if (path.isEmpty()) {
+    StubbedRequest resolveRequest(HttpServletRequest request) throws IOException {
+        final String path = pathResolver.resolvePath(request);
+        if (path == null) {
             return null;
         }
 
-        final StubbedRequest stubbedRequest = requestFinder.find(resources.listFiles(path), request);
+        final StubbedRequest stubbedRequest = requestFinder.find(path, resources.listFiles(path), request);
         if (stubbedRequest != null) {
             return stubbedRequest;
         }
 
-        return resolveRequest(request, paths.parentPath(path));
+        return new StubbedRequest("", path);
     }
 }

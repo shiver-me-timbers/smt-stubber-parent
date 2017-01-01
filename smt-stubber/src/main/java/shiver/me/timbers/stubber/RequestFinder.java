@@ -16,8 +16,8 @@ class RequestFinder {
         this.iterables = iterables;
     }
 
-    StubbedRequest find(List<String> paths, HttpServletRequest request) {
-        return iterables.filter(requestMapper.read(paths), new MatchesRequest(request)).findFirst()
+    StubbedRequest find(String path, List<String> filePaths, HttpServletRequest request) {
+        return iterables.filter(requestMapper.read(path, filePaths), new MatchesRequest(request)).findFirst()
             .getOrElse(null);
     }
 }

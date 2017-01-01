@@ -5,7 +5,22 @@ package shiver.me.timbers.stubber;
  */
 class ResponseResolver {
 
+    private final ResponseFinder responseFinder;
+
+    ResponseResolver(ResponseFinder responseFinder) {
+        this.responseFinder = responseFinder;
+    }
+
     StubbedResponse resolveResponse(StubbedRequest request) {
-        throw new UnsupportedOperationException();
+        if (request == null) {
+            return new StubbedNotFoundResponse();
+        }
+
+        final StubbedResponse responseByName = responseFinder.findByName(request);
+        if (responseByName != null) {
+            return responseByName;
+        }
+
+        return responseFinder.findDefault(request);
     }
 }

@@ -13,29 +13,18 @@ import static java.util.Map.Entry;
 class RequestMapper {
 
     private final Iterables iterables;
-    private final IsRequestFile isRequestFile;
-    private final AgainstRequestName againstRequestName;
-    private final ToRequestFilePairs toRequestFilePairs;
-    private final ToStubbedRequest toStubbedRequest;
+    private final Paths paths;
 
-    RequestMapper(
-        Iterables iterables,
-        IsRequestFile isRequestFile,
-        AgainstRequestName againstRequestName,
-        ToRequestFilePairs toRequestFilePairs,
-        ToStubbedRequest toStubbedRequest
-    ) {
+    RequestMapper(Iterables iterables, Paths paths) {
         this.iterables = iterables;
-        this.isRequestFile = isRequestFile;
-        this.againstRequestName = againstRequestName;
-        this.toRequestFilePairs = toRequestFilePairs;
-        this.toStubbedRequest = toStubbedRequest;
+        this.paths = paths;
     }
 
-    List<StubbedRequest> read(List<String> paths) {
-        final Map<String, Entry<String, String>> requestFileMap = iterables.filter(paths, isRequestFile)
-            .map(againstRequestName).reduce(toRequestFilePairs)
+    List<StubbedRequest> read(String path, List<String> filePaths) {
+        final Map<String, Entry<String, String>> requestFileMap = iterables.filter(filePaths, new IsRequestFile(paths))
+            .map(new AgainstRequestName()).reduce(new ToRequestFilePairs())
             .getOrElse(Collections.<String, Entry<String, String>>emptyMap());
-        return iterables.map(requestFileMap.entrySet(), toStubbedRequest).toList(new ArrayList<StubbedRequest>());
+        return iterables.map(requestFileMap.entrySet(), new ToStubbedRequest(path))
+            .toList(new ArrayList<StubbedRequest>());
     }
 }
